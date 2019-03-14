@@ -1,5 +1,7 @@
 # entrez_direct
 Tutorial on using E-utilities
+REST API called the Entrez Utilities
+Representational State Transfer (REST) Application Programming Interface (API)
 
 # Extend tutorial from NCBI
 
@@ -69,12 +71,39 @@ SAMN08357819    NZ_CP026002
 SAMN08357818    NZ_CP026003
 SAMN08357817    NZ_CP026004
 ```
-
+```
 esearch -db bioproject -query PRJNA429695 | elink -target biosample | efetch -format docsum | ./xtract.Linux -pattern DocumentSummary -block Accession -element Accession
 
 cat fmicb2018_00771.txt | while read samn acc; do esearch -db nucleotide -query ${set lineCount 0acc} | efetch -format docsum; done
 
 while read -r samn acc; do echo "esearch -db nucleotide -query ${acc} | efetch -format gbwithparts" | sh > ${samn}.gbk; done < fmicb2018_00771.txt
+```
 
 
+## Get reads from bioproject SRA
+
+```
+esearch -db bioproject -query PRJNA383436 | elink -target biosample | efetch -format docsum | ./xtract.Linux -pattern DocumentSummary -block Ids -element Id
+SAMN06765483	Enterobacter cloacae MS7884A	SRS2169477
+SAMN07173918	Enterobacter cloacae MS8079	SRS2350264
+SAMN07173917	Enterobacter cloacae MS8078	SRS2350262
+SAMN07173916	Enterobacter cloacae MS8077	SRS2350261
+SAMN07173915	Enterobacter cloacae MS7926	SRS2350260
+SAMN07173914	Escherichia coli MS7925	SRS2350259
+SAMN07173913	Enterobacter cloacae MS7924	SRS2350258
+SAMN07173912	Enterobacter cloacae MS7923	SRS2350257
+SAMN07173911	Enterobacter cloacae MS7893	SRS2350273
+SAMN07173910	Enterobacter cloacae MS7892	SRS2350272
+SAMN07173909	Enterobacter cloacae MS7891	SRS2350268
+SAMN07173908	Enterobacter cloacae MS7890	SRS2350269
+SAMN07173907	Enterobacter cloacae MS7889	SRS2350271
+SAMN07173906	Enterobacter cloacae MS7888	SRS2350270
+SAMN07173905	Enterobacter cloacae MS7887	SRS2350265
+SAMN07173904	Enterobacter cloacae MS7886	SRS2350263
+SAMN07173903	Enterobacter cloacae MS7885	SRS2350267
+SAMN07173902	Enterobacter cloacae MS7884	SRS2350266
+SAMN06831386	Enterobacter cloacae MS7884B	SRS2169478
+
+
+```
 
