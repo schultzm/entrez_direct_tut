@@ -8,7 +8,7 @@ Representational State Transfer (REST) Application Programming Interface (API)
 See [here](https://www.ncbi.nlm.nih.gov/books/NBK179288/)
 
 
-## Install
+## Install e-utilities
 
 ```
 cd ~
@@ -30,6 +30,23 @@ cd ~
   ./edirect/setup.sh
 
   ```
+
+## Install xtract
+
+```
+Unable to locate xtract executable. Please execute the following:
+
+  ftp-cp ftp.ncbi.nlm.nih.gov /entrez/entrezdirect xtract.Darwin.gz
+  gunzip -f xtract.Darwin.gz
+  chmod +x xtract.Darwin
+
+
+~/xtract.Linux -help
+```
+
+## Intro to XML
+
+[XML](https://www.sitepoint.com/really-good-introduction-xml/)
 
 ## Entrez Direct Functions
 
@@ -82,8 +99,14 @@ while read -r samn acc; do echo "esearch -db nucleotide -query ${acc} | efetch -
 
 ## Get reads from bioproject SRA
 
+### Understanding SRA
+
+[help!](https://www.ncbi.nlm.nih.gov/books/NBK56913/)
+
+
 ```
-esearch -db bioproject -query PRJNA383436 | elink -target biosample | efetch -format docsum | ./xtract.Linux -pattern DocumentSummary -block Ids -element Id
+esearch -db bioproject -query PRJNA383436 | elink -target biosample | efetch -format docsum | ./xtract.Linux -pattern DocumentSummary -block Ids -element Id -group SRA > accessions_demo.txt
+#BIOSAMPLE    Sample_name    SRA_sample_accession
 SAMN06765483	Enterobacter cloacae MS7884A	SRS2169477
 SAMN07173918	Enterobacter cloacae MS8079	SRS2350264
 SAMN07173917	Enterobacter cloacae MS8078	SRS2350262
