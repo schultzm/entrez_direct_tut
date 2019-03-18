@@ -74,8 +74,11 @@ Several additional functions are also provided:
 
 ## Get assemblies from bioproject
 
-`esearch -db bioproject -query PRJNA429695 | elink -target biosample | efetch -format docsum | ./xtract.Linux -pattern DocumentSummary -block Accession -element Accession | while read line; do ACC=$(echo "esearch -db nucleotide -query ${line} | efetch -format docsum | ~/xtract.Linux -pattern DocumentSummary -element Caption | head -n 1" | sh); echo -e ${line}'\t'${ACC}; done > fmicb2018_00771.txt`
-`less fmicb2018_00771`
+```
+esearch -db bioproject -query PRJNA429695 | elink -target biosample | efetch -format docsum | ./xtract.Linux -pattern DocumentSummary -block Accession -element Accession | while read line; do ACC=$(echo "esearch -db nucleotide -query ${line} | efetch -format docsum | ~/xtract.Linux -pattern DocumentSummary -element Caption | head -n 1" | sh); echo -e ${line}'\t'${ACC}; done > fmicb2018_00771.txt`
+less fmicb2018_00771
+```
+
 ```
 SAMN08357826    NZ_CP025995
 SAMN08357825    NZ_CP025996
@@ -88,6 +91,7 @@ SAMN08357819    NZ_CP026002
 SAMN08357818    NZ_CP026003
 SAMN08357817    NZ_CP026004
 ```
+
 ```
 esearch -db bioproject -query PRJNA429695 | elink -target biosample | efetch -format docsum | ./xtract.Linux -pattern DocumentSummary -block Accession -element Accession
 
