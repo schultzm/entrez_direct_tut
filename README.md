@@ -47,7 +47,9 @@ cd ~
 The following navigation functions support exploration within the Entrez databases:
 
 `esearch` performs a new Entrez search using terms in indexed fields.
+
 `elink` looks up neighbors (within a database) or links (between databases).
+
 `efilter` filters or restricts the results of a previous query.
 
 Records can be retrieved in specified formats or as document summaries:
@@ -61,7 +63,9 @@ Desired fields from XML results can be extracted without writing a program:
 Several additional functions are also provided:
 
 `einfo` obtains information on indexed fields in an Entrez database.
+
 `epost` uploads unique identifiers (UIDs) or sequence accession numbers.
+
 `nquire` sends a URL request to a web page or CGI service.
 
 The above functions can be piped to one another to allow creativty on the part of the end user.
