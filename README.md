@@ -1,14 +1,21 @@
 # entrez_direct
+
 Tutorial on using E-utilities
-REST API called the Entrez Utilities
-Representational State Transfer (REST) Application Programming Interface (API)
+REST API
+Representational State Transfer (REST) Application Programming Interface (API) to access the Entrez Utilities suite known as `edirect`.
+
+Entrez is a molecular biology database system that provides integrated access to nucleotide and protein sequence data, gene-centered and genomic mapping information, 3D structure data, PubMed MEDLINE, and more. The system is produced by the National Center for Biotechnology Information (NCBI) and is available via the Internet.
+[https://www.ncbi.nlm.nih.gov/Web/Search/entrezfs.html](https://www.ncbi.nlm.nih.gov/Web/Search/entrezfs.html)
+
 
 # Extended tutorial from NCBI
 
-See [https://www.ncbi.nlm.nih.gov/books/NBK179288/](https://www.ncbi.nlm.nih.gov/books/NBK179288/)
+Refer to [https://www.ncbi.nlm.nih.gov/books/NBK179288/](https://www.ncbi.nlm.nih.gov/books/NBK179288/) for an extended tutorial.
 
 
-## Install e-utilities
+
+## Install software
+### e-utilities
 
 ```
 cd ~
@@ -25,7 +32,7 @@ cd ~
 
   ```
 
-## Install xtract
+### xtract
 
 ```
 #Unable to locate xtract executable. Please execute the following:
@@ -38,11 +45,9 @@ cd ~
 ~/xtract.Linux -help
 ```
 
-## Intro to XML
-
-[https://www.sitepoint.com/really-good-introduction-xml/](https://www.sitepoint.com/really-good-introduction-xml/)
-
 ## Entrez Direct Functions
+
+The edirect functions allow you to query the entrez database using a REST API.  Results can be returned in human readable text as [xml](https://www.sitepoint.com/really-good-introduction-xml/), [json](https://en.wikipedia.org/wiki/JSON) and (asn.1)[https://www.ncbi.nlm.nih.gov/Structure/asn1.html] formats.
 
 The following navigation functions support exploration within the Entrez databases:
 
@@ -68,12 +73,35 @@ Several additional functions are also provided:
 
 `nquire` sends a URL request to a web page or CGI service.
 
-The above functions can be piped to one another to allow creativty on the part of the end user.
+The above functions can be piped to one another to allow creativty on the part of the end user.  To get help on any function do `functionname -help`
+
 
 ## An example to get assemblies from bioproject
+In this example we will examine bioproject PRJNA429695.  We will build up the command using pipe characters to eventually download the assemblies in genbank format.
+
+First, search for the bioproject on entrez using `esearch`:
+
+```
+esearch -db bioproject -query PRJNA429695
+```
+
+Read the result by piping the hit to `efetch`
+```
+esearch -db bioproject -query PRJNA429695 | efetch -format docsum
+```
+
+Optionally format the result in `json` (which can be parsed using json parsers)
+
+```
+esearch -db bioproject -query PRJNA42969 | efetch -format docsum -mode json
+```
+In the above, the results returned from the running of one function (i.e., the standard out or `stdout`) are passed to the standard in (or `stdin`) of the next function using the pipe `|` character.
 
 
-This command uses `esearch` to search for bioproject PRJNA429695.  The results (i.e., the standard out or `stdout` of command) are piped (using the pipe `|` character) to `elink`, which uses the ouput of esearch to link into a search in the biosample database.  `efetch` fetches the hits in DocumentSummary format. `xtract.Linux` is used to extract the `SAMN` accessions. We then iterate through each accession and run `esearch`, `efetch` and `xtract` to get the caption (i.e., the NCBI refseq assembly accession).  For each record there are two captions (the refseq and the user submission), so we use `head` to retain only the first caption.  The first caption is stored inside a variable `ACC`, which captures the results of the previous search run inside a subshell `$()`.  The final part prints the `SAMN` (stored in the variable `line`) and the NCBI accession (stored in the variable `ACC`) in tab-delimited format.  the output is stored in the variable `ACC`.
+
+to `elink`, which uses the ouput of esearch to link into a search in the biosample database.  `efetch` fetches the hits in DocumentSummary format. `xtract.Linux` is used to extract the `SAMN` accessions. We then iterate through each accession and run `esearch`, `efetch` and `xtract` to get the caption (i.e., the NCBI refseq assembly accession).  For each record there are two captions (the refseq and the user submission), so we use `head` to retain only the first caption.  The first caption is stored inside a variable `ACC`, which captures the results of the previous search run inside a subshell `$()`.  The final part prints the `SAMN` (stored in the variable `line`) and the NCBI accession (stored in the variable `ACC`) in tab-delimited format.  the output is stored in the variable `ACC`.
+
+
 ```
 esearch -db bioproject -query PRJNA429695 | elink -target biosample | efetch -format docsum | ./xtract.Linux -pattern DocumentSummary -block Accession -element Accession | while read line; do ACC=$(echo "esearch -db nucleotide -query ${line} | efetch -format docsum | ~/xtract.Linux -pattern DocumentSummary -element Caption | head -n 1" | sh); echo -e ${line}'\t'${ACC}; done > fmicb2018_00771.txt`
 less fmicb2018_00771
