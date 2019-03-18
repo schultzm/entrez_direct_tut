@@ -1,4 +1,4 @@
-# entrez_direct
+# entrez_direct tutorial
 
 Tutorial on using E-utilities
 REST API
