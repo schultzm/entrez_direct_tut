@@ -3,9 +3,9 @@ Tutorial on using E-utilities
 REST API called the Entrez Utilities
 Representational State Transfer (REST) Application Programming Interface (API)
 
-# Extend tutorial from NCBI
+# Extended tutorial from NCBI
 
-See [here](https://www.ncbi.nlm.nih.gov/books/NBK179288/)
+See [https://www.ncbi.nlm.nih.gov/books/NBK179288/](https://www.ncbi.nlm.nih.gov/books/NBK179288/)
 
 
 ## Install e-utilities
@@ -21,12 +21,6 @@ cd ~
   rm edirect.tar.gz
   builtin exit
   export PATH=${PATH}:$HOME/edirect >& /dev/null || setenv PATH "${PATH}:$HOME/edirect"
-  <!-- cpan
-  > o conf make_install_make_command 'sudo make'
-  > o conf commit
-  > quit
-  mount
-  mount -n -o remount,suid / -->
   ./edirect/setup.sh
 
   ```
@@ -34,8 +28,8 @@ cd ~
 ## Install xtract
 
 ```
-Unable to locate xtract executable. Please execute the following:
-
+#Unable to locate xtract executable. Please execute the following:
+#Mac use xtract.Darwin, Linux use xtract.Linux
   ftp-cp ftp.ncbi.nlm.nih.gov /entrez/entrezdirect xtract.Darwin.gz
   gunzip -f xtract.Darwin.gz
   chmod +x xtract.Darwin
@@ -46,11 +40,11 @@ Unable to locate xtract executable. Please execute the following:
 
 ## Intro to XML
 
-[XML](https://www.sitepoint.com/really-good-introduction-xml/)
+[https://www.sitepoint.com/really-good-introduction-xml/](https://www.sitepoint.com/really-good-introduction-xml/)
 
 ## Entrez Direct Functions
 
-Navigation functions support exploration within the Entrez databases:
+The following navigation functions support exploration within the Entrez databases:
 
 `esearch` performs a new Entrez search using terms in indexed fields.
 `elink` looks up neighbors (within a database) or links (between databases).
@@ -70,10 +64,12 @@ Several additional functions are also provided:
 `epost` uploads unique identifiers (UIDs) or sequence accession numbers.
 `nquire` sends a URL request to a web page or CGI service.
 
+The above functions can be piped to one another to allow creativty on the part of the end user.
+
+## An example to get assemblies from bioproject
 
 
-## Get assemblies from bioproject
-
+This command uses `esearch` to search for bioproject PRJNA429695.  The results (i.e., the standard out or `stdout` of command) are piped (using the pipe `|` character) to `elink`, which uses the ouput of esearch to link into a search in the biosample database.  `efetch` fetches the hits in DocumentSummary format. `xtract.Linux` is used to extract the `SAMN` accessions. We then iterate through each accession and run `esearch`, `efetch` and `xtract` to get the caption (i.e., the NCBI refseq assembly accession).  For each record there are two captions (the refseq and the user submission), so we use `head` to retain only the first caption.  The first caption is stored inside a variable `ACC`, which captures the results of the previous search run inside a subshell `$()`.  The final part prints the `SAMN` (stored in the variable `line`) and the NCBI accession (stored in the variable `ACC`) in tab-delimited format.  the output is stored in the variable `ACC`.
 ```
 esearch -db bioproject -query PRJNA429695 | elink -target biosample | efetch -format docsum | ./xtract.Linux -pattern DocumentSummary -block Accession -element Accession | while read line; do ACC=$(echo "esearch -db nucleotide -query ${line} | efetch -format docsum | ~/xtract.Linux -pattern DocumentSummary -element Caption | head -n 1" | sh); echo -e ${line}'\t'${ACC}; done > fmicb2018_00771.txt`
 less fmicb2018_00771
