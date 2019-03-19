@@ -42,6 +42,7 @@ ftp-cp ftp.ncbi.nlm.nih.gov /entrez/entrezdirect xtract.Linux.gz
 gunzip -f xtract.Linux.gz
 #make it executable
 chmod +x xtract.Linux
+mv xtract.Linux ~/.local/bin
 
 #Add it to your path, or put it somewhere that is in your path, for example in ~/.local/bin/ so that you can get help by doing:
 xtract.Linux -help
@@ -254,9 +255,70 @@ do
 done | parallel -j 3 --bar {}
 ```
 
-## Example 2:
+## Example 2: Given a set of ENA sample accessions, get RefSeq assemblies from NCBI
 
-## Get reads from bioproject SRA
+In this example, we only have a list of ERS accessions from the ENA.  But we want the GenBank formatted RefSeq assemblies from NCBI.  Here is one way to achieve this goal:
+
+```
+#ERS from the query table
+arr=$(echo "ERS381042
+ERS380926
+ERS381069
+ERS380950
+ERS381034
+ERS381155
+ERS381123
+ERS381163
+ERS381278
+ERS380992
+ERS381092
+ERS380985
+ERS381012
+ERS381151
+ERS380916
+ERS381212
+ERS381145
+ERS380996
+ERS380936
+ERS380970
+ERS381180
+ERS381255
+ERS381142
+ERS380986
+ERS380973
+ERS381264
+ERS381025
+ERS381003
+ERS380984
+ERS380962
+ERS380975
+ERS381005
+ERS380951
+ERS381013
+ERS381153
+ERS381156
+ERS381096
+ERS380915
+ERS380935
+ERS381081
+ERS381082" | xargs);
+#BioProject number
+PRJ="PRJEB5065"
+
+for ERS in ${arr[@]}
+do BIOSAMPLE=$(esearch -db biosample -query ${ERS} | efetch -format docsum | xtract.Linux -pattern DocumentSummary -block Accession -element Accession)
+#Assembly for BioSample
+ASSEMBLY=$(esearch -db assembly -query ${BIOSAMPLE} | efetch -format docsum | xtract.Linux -pattern DocumentSummary -element AssemblyAccession)
+echo -e ${ERS}'\t'${BIOSAMPLE}'\t'${ASSEMBLY}
+done > ${PRJ}.mdata.tab
+
+cat ${PRJ}.mdata.tab | while read ERSAMPLE BIOSAMPLE ASSEMBLY;
+do echo "esearch -db nucleotide -query ${ASSEMBLY} | efetch -format gbwithparts > ${ERSAMPLE}.gbk"
+done | parallel -j 3 --bar {}
+```
+
+
+## Example 3: Given an NCBI BioProject accession, get the read sets from NCBI SRA
 
 ### Understanding SRA
 
@@ -264,28 +326,26 @@ done | parallel -j 3 --bar {}
 
 
 ```
-esearch -db bioproject -query PRJNA383436 | elink -target biosample | efetch -format docsum | ./xtract.Linux -pattern DocumentSummary -block Ids -element Id -group SRA > accessions_demo.txt
-#BIOSAMPLE    Sample_name    SRA_sample_accession
-SAMN06765483	Enterobacter cloacae MS7884A	SRS2169477
-SAMN07173918	Enterobacter cloacae MS8079	SRS2350264
-SAMN07173917	Enterobacter cloacae MS8078	SRS2350262
-SAMN07173916	Enterobacter cloacae MS8077	SRS2350261
-SAMN07173915	Enterobacter cloacae MS7926	SRS2350260
-SAMN07173914	Escherichia coli MS7925	SRS2350259
-SAMN07173913	Enterobacter cloacae MS7924	SRS2350258
-SAMN07173912	Enterobacter cloacae MS7923	SRS2350257
-SAMN07173911	Enterobacter cloacae MS7893	SRS2350273
-SAMN07173910	Enterobacter cloacae MS7892	SRS2350272
-SAMN07173909	Enterobacter cloacae MS7891	SRS2350268
-SAMN07173908	Enterobacter cloacae MS7890	SRS2350269
-SAMN07173907	Enterobacter cloacae MS7889	SRS2350271
-SAMN07173906	Enterobacter cloacae MS7888	SRS2350270
-SAMN07173905	Enterobacter cloacae MS7887	SRS2350265
-SAMN07173904	Enterobacter cloacae MS7886	SRS2350263
-SAMN07173903	Enterobacter cloacae MS7885	SRS2350267
-SAMN07173902	Enterobacter cloacae MS7884	SRS2350266
-SAMN06831386	Enterobacter cloacae MS7884B	SRS2169478
+MDATA="accessions_demo.txt"
+esearch -db bioproject -query PRJNA383436 | elink -target biosample | efetch -format docsum | xtract.Linux -pattern DocumentSummary -block Ids -element Id -group SRA > ${MDATA}
+SRSs=$(cat ${MDATA} | while read LINE
+do
+  NCOL=$(echo ${LINE} | wc -w)
+  ACC=$(echo ${LINE} | cut -d ' ' -f ${NCOL})
+  echo ${ACC}
+done | xargs)
+
+for SRS in ${SRSs[@]}
+do
+  esearch -db SRA -query ${SRS} | efetch -format docsum
+done
 
 
+
+  echo "fastq-dump --split-3 ${ACC}"
+done | parallel -j 10 --bar {}
+
+
+ SAMN STRAIN SRS; do echo ${SRS}; done
 ```
 
