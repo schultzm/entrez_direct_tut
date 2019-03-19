@@ -37,9 +37,10 @@ To parse xml output, we can use the tool `xtract`.
 To install `xtract`, run the following commands in a terminal window but choose the appropriate version for your operating environment (see ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/ for available versions):
 
 ```
-#Mac use xtract.Darwin, Linux use xtract.Linux, windows I think use the
+#Mac use xtract.Darwin, Linux use xtract.Linux, windows I think use the cygwin version.
 ftp-cp ftp.ncbi.nlm.nih.gov /entrez/entrezdirect xtract.Linux.gz
 gunzip -f xtract.Linux.gz
+#make it executable
 chmod +x xtract.Linux
 
 #To get help on xtract do:
@@ -54,7 +55,7 @@ xtract.Linux -help
 
 ## edirect Functions
 
-The edirect functions allow you to query the NCBI entrez database from the command line.  This approach is powerful in that customised, advanced or simple queries can be built into scripts, automated, and executed in parallel (be careful not to exceed three queries per second).
+The edirect functions allow you to query the NCBI entrez database from the command line.  This approach is powerful in that customised queries can be automated and reproduced by writing them into scripts.
 
 The following navigation functions support exploration within the Entrez databases:
 
@@ -80,18 +81,29 @@ Several additional functions are also provided:
 
 `nquire` sends a URL request to a web page or CGI service.
 
-The above functions can be piped to one another to allow creativty on the part of the end user.  To get help on any function do `functionname -help`, example `efetch -help`.
+stdout of the functions can be piped to standard in (stdin) of another function, allowing creativty on the part of the end user.  To get help on any function do `functionname -help`, example `efetch -help`.
 
 
 ## An example to get assemblies from bioproject
-In this example we will examine bioproject PRJNA429695.  We will build up the command using pipe characters to eventually download the assemblies in genbank format.
+In this example we will examine bioproject PRJNA429695.  We will build up the command to connect the stdout of `esearch`, to the stdin of `efetch`, from the which the stdout goes to stdin of `elink`, from which the returned stdout is parsed using `xtract` to grab desired fields.
 
-First, search for the bioproject on entrez using `esearch`:
+First, check that the bioproject exists by searching for the bioproject using `esearch`:
 
 ```
 esearch -db bioproject -query PRJNA429695
 ```
+The result below shows a count of `1`, indicating a hit:
+```
+<ENTREZ_DIRECT>
+  <Db>bioproject</Db>
+  <WebEnv>NCID_1_34836435_130.14.22.76_9001_1552959566_1290483952_0MetA0_S_MegaStore</WebEnv>
+  <QueryKey>1</QueryKey>
+  <Count>1</Count>
+  <Step>1</Step>
+</ENTREZ_DIRECT>
+```
 
+To fetch the document summary, pipe the stdout of the result to standard in (stdin) of efetch
 Read the result by piping the hit to `efetch`
 ```
 esearch -db bioproject -query PRJNA429695 | efetch -format docsum
