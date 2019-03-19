@@ -343,4 +343,7 @@ do
 done > fastqdump.txt
 parallel -j 3 --bar {} :::: fastqdump.txt
 ```
+
+That's all for today.
+
 `EOF`
