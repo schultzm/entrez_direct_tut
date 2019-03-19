@@ -30,11 +30,11 @@ export PATH=${PATH}:$HOME/edirect >& /dev/null || setenv PATH "${PATH}:$HOME/edi
 ```
 
 
-Succesful results of any edirect query are returned to stdout in human readable text as [xml](https://www.sitepoint.com/really-good-introduction-xml/), [json](https://en.wikipedia.org/wiki/JSON) and (asn.1)[https://www.ncbi.nlm.nih.gov/Structure/asn1.html] formats.  Errors are returned to standard error (stderr).  We can use the tool `xtract` to parse xml output.
+Succesful results of any edirect query are returned to stdout in human readable text as [xml](https://www.sitepoint.com/really-good-introduction-xml/), [json](https://en.wikipedia.org/wiki/JSON) and [asn.1](https://www.ncbi.nlm.nih.gov/Structure/asn1.html) formats.  Errors are returned to standard error (stderr).  We can use the tool `xtract` to parse xml output.
 
 ### xtract
 
-To install `xtract`, run the following commands in a terminal window but choose the appropriate version for your operating environment (see ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/ for available versions):
+To install `xtract`, run the following commands in a terminal window but choose the appropriate version for your operating environment.  See [here](ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/) for available versions:
 
 ```
 #Mac use xtract.Darwin, Linux use xtract.Linux, windows I think use the cygwin version.
