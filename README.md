@@ -12,7 +12,7 @@ The tutorial below aims to give a basic overview of the Entrez Direct (edirect) 
 ## Install software
 ### edirect
 
-First up, we need to install the edirect suite of tools.  The software is written in the [Perl](https://www.perl.org/) programming language.  [Instructions for installation](https://www.ncbi.nlm.nih.gov/books/NBK179288/) are copied below.  Paste these commands into a terminal window.
+First up, we need to install the edirect suite of tools.  The software is written in the [Perl](https://www.perl.org/) programming language.  [Instructions for installation](https://www.ncbi.nlm.nih.gov/books/NBK179288/) are copied below.  Paste these commands into a terminal window and hit enter.
 
 
 ```
@@ -30,10 +30,10 @@ export PATH=${PATH}:$HOME/edirect >& /dev/null || setenv PATH "${PATH}:$HOME/edi
 ```
 
 
-Results of an edirect query are returned to stdout in human readable text as [xml](https://www.sitepoint.com/really-good-introduction-xml/), [json](https://en.wikipedia.org/wiki/JSON) and (asn.1)[https://www.ncbi.nlm.nih.gov/Structure/asn1.html] formats.
+Succesful results of any edirect query are returned to stdout in human readable text as [xml](https://www.sitepoint.com/really-good-introduction-xml/), [json](https://en.wikipedia.org/wiki/JSON) and (asn.1)[https://www.ncbi.nlm.nih.gov/Structure/asn1.html] formats.  Errors are returned to standard error (stderr).  We can use the tool `xtract` to parse xml output.
+
 ### xtract
 
-To parse xml output, we can use the tool `xtract`.
 To install `xtract`, run the following commands in a terminal window but choose the appropriate version for your operating environment (see ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/ for available versions):
 
 ```
@@ -84,10 +84,12 @@ Several additional functions are also provided:
 stdout of the functions can be piped to standard in (stdin) of another function, allowing creativty on the part of the end user.  To get help on any function do `functionname -help`, example `efetch -help`.
 
 
-## An example to get assemblies from bioproject
-In this example we will examine bioproject PRJNA429695.  We will build up the command to connect the stdout of `esearch`, to the stdin of `efetch`, from the which the stdout goes to stdin of `elink`, from which the returned stdout is parsed using `xtract` to grab desired fields.
+## Example 1: Get RefSeq assemblies from a BioProject
 
-First, check that the bioproject exists by searching for the PRJ accession using `esearch`:
+### Check existence of BioProject and return a DocumentSummary of this record
+In this example we will examine bioproject PRJNA429695.  We will build up the command to connect the stdout of `esearch`, to the stdin of `efetch`, from the which the stdout goes to stdin of `elink`, from which the returned stdout is parsed using `xtract` to grab desired fields.  Some bash programming (shell scripting) will be required here.
+
+First, check that the target bioproject exists by searching for the PRJ accession using `esearch`:
 
 ```
 esearch -db bioproject -query PRJNA429695
@@ -165,12 +167,13 @@ The result should be
 </DocumentSummarySet>
 ```
 
-
-Optionally format the result in `json` (to be parsed using json instead of xml parsers as described in this tutorial)
+Optionally format the result in `json` (to be parsed using json parsers instead of xml parsers as described in this tutorial).
 
 ```
 esearch -db bioproject -query PRJNA42969 | efetch -format docsum -mode json
 ```
+
+### Find accession numbers of BioSamples in the Bioproject
 
 Now that we know the BioProject accession is valid, let's get the BioSample accession numbers from the BioProject to work with in our downstream searches. To this end, we will link the results of the `esearch` on BioProject to the BioSample database using `elink`.
 
@@ -209,11 +212,13 @@ SAMN08357818
 SAMN08357817
 ```
 
-So we have the BioSample accessions, but which RefSeq assembly accessions and strains do these BioSamples align with?  Let's store the BioSample accessions in the variable BISOAMPLES using a bash subshell (`$(dostuff)`).
+Great, we now have the BioSample accessions.  Our next problem is recording which RefSeq assembly accessions and strains align with these BioSamples?  Let's store the BioSample accessions in the variable BISOAMPLES using a bash subshell (`$(dostuff)`).
 
 `BIOSAMPLES=$(esearch -db bioproject -query PRJNA429695 | elink -target biosample | efetch -format docsum | xtract.Linux -pattern DocumentSummary -block Accession -element Accession | xargs)`
 
-We want to iterate through the BIOSAMPLES variable, query entrez for each biosample using the edirect functions.  At each iteration, we will capture the DocumentSummary in the variable DOCSUM (so that we can just extract from this variable rather than having to use the slower method of re-quering entrez).  Using `xtract` we will parse DOCSUM and extract `STRAIN` and `ASSEMBLY` accession, storing the results in the file `MDATA`.
+Look at the variable with `echo ${BIOSAMPLES}`.
+
+Now iterate through BIOSAMPLES, query entrez for each BIOSAMPLE using the edirect functions.  At each iteration,capture the DocumentSummary in the variable DOCSUM (so that we can just extract from this variable rather than having to use the slower method of re-quering entrez).  Using `xtract` we will parse DOCSUM and extract `STRAIN` and `ASSEMBLY` info, storing the metadata in the file `MDATA`.
 
 ```
 MDATA="mdata.tab"
@@ -227,13 +232,15 @@ do
 done
 ```
 
-Finally, we will iterate through the MDATA file and `efetch` a genbank `ASSEMBLY`, saving each file as `[ASSEMBLY].gbk`.  This operation will be split up into three parallel operations using [GNU Parallel](https://www.gnu.org/software/parallel/).
+Finally, iterate through the MDATA file, `efetch` a genbank `ASSEMBLY` and saving each result in `[ASSEMBLY].gbk`.  This operation will be split up into three parallel operations using [GNU Parallel](https://www.gnu.org/software/parallel/).
 ```
 cat ${MDATA} | while read BS ST AS
 do
     echo "esearch -db nucleotide -query ${ASSEMBLY} | efetch -format gbwithparts > ${ASSEMBLY}.gbk"
 done | parallel -j 3 --bar {}
 ```
+
+Putting it all together, we would run the following block of commands:
 
 ```
 BIOSAMPLES=$(esearch -db bioproject -query PRJNA429695 | elink -target biosample | efetch -format docsum | xtract.Linux -pattern DocumentSummary -block Accession -element Accession | xargs)
@@ -253,35 +260,6 @@ do
 done | parallel -j 3 --bar {}
 ```
 
-We can iterate through each line in the stdout by piping the stdout to a `while read` loop, at each iteration storing the result in LINE.
-
-
-
-```
-esearch -db bioproject -query PRJNA429695 | elink -target biosample | efetch -format docsum | ./xtract.Linux -pattern DocumentSummary -block Accession -element Accession | while read line; do ACC=$(echo "esearch -db nucleotide -query ${line} | efetch -format docsum | ~/xtract.Linux -pattern DocumentSummary -element Caption | head -n 1" | sh); echo -e ${line}'\t'${ACC}; done > fmicb2018_00771.txt`
-less fmicb2018_00771
-```
-
-```
-SAMN08357826    NZ_CP025995
-SAMN08357825    NZ_CP025996
-SAMN08357824    NZ_CP025997
-SAMN08357823    NZ_CP025998
-SAMN08357822    NZ_CP025999
-SAMN08357821    NZ_CP026000
-SAMN08357820    NZ_CP026001
-SAMN08357819    NZ_CP026002
-SAMN08357818    NZ_CP026003
-SAMN08357817    NZ_CP026004
-```
-
-```
-esearch -db bioproject -query PRJNA429695 | elink -target biosample | efetch -format docsum | ./xtract.Linux -pattern DocumentSummary -block Accession -element Accession
-
-cat fmicb2018_00771.txt | while read samn acc; do esearch -db nucleotide -query ${set lineCount 0acc} | efetch -format docsum; done
-
-while read -r samn acc; do echo "esearch -db nucleotide -query ${acc} | efetch -format gbwithparts" | sh > ${samn}.gbk; done < fmicb2018_00771.txt
-```
 
 
 ## Get reads from bioproject SRA
