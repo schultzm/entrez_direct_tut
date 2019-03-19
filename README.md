@@ -325,6 +325,7 @@ done | parallel -j 3 --bar {}
 [help!](https://www.ncbi.nlm.nih.gov/books/NBK56913/)
 
 
+Download read sets using `fastq-dump` (but consider using [ascp](https://www.ncbi.nlm.nih.gov/books/NBK158899/) since fastq-dump is slllooooow)
 ```
 MDATA="accessions_demo.txt"
 esearch -db bioproject -query PRJNA383436 | elink -target biosample | efetch -format docsum | xtract.Linux -pattern DocumentSummary -block Ids -element Id -group SRA > ${MDATA}
@@ -337,15 +338,9 @@ done | xargs)
 
 for SRS in ${SRSs[@]}
 do
-  esearch -db SRA -query ${SRS} | efetch -format docsum
-done
-
-
-
-  echo "fastq-dump --split-3 ${ACC}"
-done | parallel -j 10 --bar {}
-
-
- SAMN STRAIN SRS; do echo ${SRS}; done
+  SRR=$(esearch -db SRA -query ${SRS} | efetch -format runinfo -mode xml | xtract.Linux -pattern Run -element Run)
+  echo "fastq-dump --split-3 --gzip ${SRR}"
+done > fastqdump.txt
+parallel -j 3 --bar {} :::: fastqdump.txt
 ```
-
+`EOF`
