@@ -29,13 +29,15 @@ export PATH=${PATH}:$HOME/edirect >& /dev/null || setenv PATH "${PATH}:$HOME/edi
 ./edirect/setup.sh
 ```
 
+
+Results of an edirect query are returned to stdout in human readable text as [xml](https://www.sitepoint.com/really-good-introduction-xml/), [json](https://en.wikipedia.org/wiki/JSON) and (asn.1)[https://www.ncbi.nlm.nih.gov/Structure/asn1.html] formats.
 ### xtract
 
-We then need to install `xtract`, which is software used to parse xml formatted data returned to standard out from a REST API query of NCBI entrez.
-To install, run the following commands in a terminal window but choose the appropriate `xtract` version for your operating environment (see ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/ for available versions):
+To parse xml output, we can use the tool `xtract`.
+To install `xtract`, run the following commands in a terminal window but choose the appropriate version for your operating environment (see ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/ for available versions):
 
 ```
-#Mac use xtract.Darwin, Linux use xtract.Linux
+#Mac use xtract.Darwin, Linux use xtract.Linux, windows I think use the
 ftp-cp ftp.ncbi.nlm.nih.gov /entrez/entrezdirect xtract.Linux.gz
 gunzip -f xtract.Linux.gz
 chmod +x xtract.Linux
@@ -52,7 +54,7 @@ xtract.Linux -help
 
 ## edirect Functions
 
-The edirect functions allow you to query the NCBI entrez database using a REST API.  Results can be returned in human readable text as [xml](https://www.sitepoint.com/really-good-introduction-xml/), [json](https://en.wikipedia.org/wiki/JSON) and (asn.1)[https://www.ncbi.nlm.nih.gov/Structure/asn1.html] formats.
+The edirect functions allow you to query the NCBI entrez database from the command line.  This approach is powerful in that customised, advanced or simple queries can be built into scripts, automated, and executed in parallel (be careful not to exceed three queries per second).
 
 The following navigation functions support exploration within the Entrez databases:
 
