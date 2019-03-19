@@ -313,7 +313,7 @@ echo -e ${ERS}'\t'${BIOSAMPLE}'\t'${ASSEMBLY}
 done > ${PRJ}.mdata.tab
 
 cat ${PRJ}.mdata.tab | while read ERSAMPLE BIOSAMPLE ASSEMBLY;
-do echo "esearch -db nucleotide -query ${ASSEMBLY} | efetch -format gbwithparts > ${ERSAMPLE}.gbk"
+do echo "esearch -db nucleotide -query ${ASSEMBLY} | efetch -format gbwithparts > ${ERSAMPLE}.gbk" #swap gbwithparts for fasta if you prefer a fasta file
 done | parallel -j 3 --bar {}
 ```
 
