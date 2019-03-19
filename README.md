@@ -34,7 +34,7 @@ Succesful results of any edirect query are returned to stdout in human readable 
 
 ### xtract
 
-To install `xtract`, run the following commands in a terminal window but choose the appropriate version for your operating environment.  See [here](ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/) for available versions:
+To install `xtract`, run the following commands in a terminal window but choose the appropriate version for your operating environment.  See [here](http://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/) for available versions:
 
 ```
 #Mac use xtract.Darwin, Linux use xtract.Linux, windows I think use the cygwin version.
@@ -43,13 +43,7 @@ gunzip -f xtract.Linux.gz
 #make it executable
 chmod +x xtract.Linux
 
-#To get help on xtract do:
-~/xtract.Linux -help
-#or
-./pathtoxtract/xtract.version -help
-#for linux this would be
-./xtract.Linux -help
-#or if you add it to your path, or put it somewhere that is in your path, for example in ~/.local/bin/ just do:
+#Add it to your path, or put it somewhere that is in your path, for example in ~/.local/bin/ so that you can get help by doing:
 xtract.Linux -help
 ```
 
@@ -87,7 +81,7 @@ stdout of the functions can be piped to standard in (stdin) of another function,
 ## Example 1: Get RefSeq assemblies from a BioProject
 
 ### Check existence of BioProject and return a DocumentSummary of this record
-In this example we will examine bioproject PRJNA429695.  We will build up the command to connect the stdout of `esearch`, to the stdin of `efetch`, from the which the stdout goes to stdin of `elink`, from which the returned stdout is parsed using `xtract` to grab desired fields.  Some bash programming (shell scripting) will be required here.
+In this example we will examine bioproject PRJNA429695.  We will build up the command to connect the stdout of `esearch`, to the stdin of `efetch`, from the which the stdout goes to stdin of `elink`, from which the returned stdout is passed to `xtract` to grab desired fields.  Some knowledge of bash programming (shell scripting) will help out here.
 
 First, check that the target bioproject exists by searching for the PRJ accession using `esearch`:
 
@@ -212,13 +206,13 @@ SAMN08357818
 SAMN08357817
 ```
 
-Great, we now have the BioSample accessions.  Our next problem is recording which RefSeq assembly accessions and strains align with these BioSamples?  Let's store the BioSample accessions in the variable BISOAMPLES using a bash subshell (`$(dostuff)`).
+Great, we now have the BioSample accessions.  Our next problem is getting and keeping a record of which RefSeq assembly accessions and strains align with these BioSamples.  Let's store the BioSample accessions from the search in the variable BISOAMPLES using a bash subshell (`$(dostuff)`).
 
 `BIOSAMPLES=$(esearch -db bioproject -query PRJNA429695 | elink -target biosample | efetch -format docsum | xtract.Linux -pattern DocumentSummary -block Accession -element Accession | xargs)`
 
 Look at the variable with `echo ${BIOSAMPLES}`.
 
-Now iterate through BIOSAMPLES, query entrez for each BIOSAMPLE using the edirect functions.  At each iteration,capture the DocumentSummary in the variable DOCSUM (so that we can just extract from this variable rather than having to use the slower method of re-quering entrez).  Using `xtract` we will parse DOCSUM and extract `STRAIN` and `ASSEMBLY` info, storing the metadata in the file `MDATA`.
+Now iterate through the variable BIOSAMPLES, query entrez for each BIOSAMPLE using the edirect functions.  At each iteration,capture the DocumentSummary in the variable DOCSUM (so that we can just extract from this variable rather than having to use the slower method of re-quering entrez).  Using `xtract` we will parse DOCSUM and extract `STRAIN` and `ASSEMBLY` info, storing the metadata in the file `MDATA`.
 
 ```
 MDATA="mdata.tab"
@@ -232,7 +226,7 @@ do
 done
 ```
 
-Finally, iterate through the MDATA file, `efetch` a genbank `ASSEMBLY` and saving each result in `[ASSEMBLY].gbk`.  This operation will be split up into three parallel operations using [GNU Parallel](https://www.gnu.org/software/parallel/).
+Finally, look in and iterate through the lines in the MDATA file, `efetch` a genbank `ASSEMBLY` and for each iteration and save each result in `[ASSEMBLY].gbk`.  This operation will be split up into three parallel operations using [GNU Parallel](https://www.gnu.org/software/parallel/).
 ```
 cat ${MDATA} | while read BS ST AS
 do
@@ -260,7 +254,7 @@ do
 done | parallel -j 3 --bar {}
 ```
 
-
+## Example 2:
 
 ## Get reads from bioproject SRA
 
