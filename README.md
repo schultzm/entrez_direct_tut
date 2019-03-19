@@ -1,53 +1,58 @@
-# entrez_direct tutorial
-
-Tutorial on using E-utilities
-REST API
-Representational State Transfer (REST) Application Programming Interface (API) to access the Entrez Utilities suite known as `edirect`.
-
-Entrez is a molecular biology database system that provides integrated access to nucleotide and protein sequence data, gene-centered and genomic mapping information, 3D structure data, PubMed MEDLINE, and more. The system is produced by the National Center for Biotechnology Information (NCBI) and is available via the Internet.
-[https://www.ncbi.nlm.nih.gov/Web/Search/entrezfs.html](https://www.ncbi.nlm.nih.gov/Web/Search/entrezfs.html)
-
-
 # Extended tutorial from NCBI
 
-Refer to [https://www.ncbi.nlm.nih.gov/books/NBK179288/](https://www.ncbi.nlm.nih.gov/books/NBK179288/) for an extended tutorial.
+For an in-depth tutorial on the edirect software, refer to [https://www.ncbi.nlm.nih.gov/books/NBK179288/](https://www.ncbi.nlm.nih.gov/books/NBK179288/).
+
+# Custom entrez_direct tutorial
+
+The tutorial below aims to give a basic overview of the Entrez Direct (edirect) Representational State Transfer (REST) Application Programming Interface (API).  This system, known as `edirect`, is used to access the National Center for Biotechnology Information (NCBI) Entrez database.  Entrez is a web-accessible molecular biology database that provides integrated access to nucleotide and protein sequence data, gene-centered and genomic mapping information, 3D structure data, PubMed MEDLINE, and more.
+[https://www.ncbi.nlm.nih.gov/Web/Search/entrezfs.html](https://www.ncbi.nlm.nih.gov/Web/Search/entrezfs.html)
 
 
 
 ## Install software
-### e-utilities
+### edirect
+
+First up, we need to install the edirect suite of tools.  The software is written in the [Perl](https://www.perl.org/) programming language.  [Instructions for installation](https://www.ncbi.nlm.nih.gov/books/NBK179288/) are copied below.  Paste these commands into a terminal window.
+
 
 ```
 cd ~
-  /bin/bash
-  perl -MNet::FTP -e \
-    '$ftp = new Net::FTP("ftp.ncbi.nlm.nih.gov", Passive => 1);
-     $ftp->login; $ftp->binary;
-     $ftp->get("/entrez/entrezdirect/edirect.tar.gz");'
-  gunzip -c edirect.tar.gz | tar xf -
-  rm edirect.tar.gz
-  builtin exit
-  export PATH=${PATH}:$HOME/edirect >& /dev/null || setenv PATH "${PATH}:$HOME/edirect"
-  ./edirect/setup.sh
-
-  ```
+/bin/bash
+perl -MNet::FTP -e \
+  '$ftp = new Net::FTP("ftp.ncbi.nlm.nih.gov", Passive => 1);
+   $ftp->login; $ftp->binary;
+   $ftp->get("/entrez/entrezdirect/edirect.tar.gz");'
+gunzip -c edirect.tar.gz | tar xf -
+rm edirect.tar.gz
+builtin exit
+export PATH=${PATH}:$HOME/edirect >& /dev/null || setenv PATH "${PATH}:$HOME/edirect"
+./edirect/setup.sh
+```
 
 ### xtract
 
+We then need to install `xtract`, which is software used to parse xml formatted data returned to standard out from a REST API query of NCBI entrez.
+To install, run the following commands in a terminal window but choose the appropriate `xtract` version for your operating environment (see ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/ for available versions):
+
 ```
-#Unable to locate xtract executable. Please execute the following:
 #Mac use xtract.Darwin, Linux use xtract.Linux
-  ftp-cp ftp.ncbi.nlm.nih.gov /entrez/entrezdirect xtract.Darwin.gz
-  gunzip -f xtract.Darwin.gz
-  chmod +x xtract.Darwin
+ftp-cp ftp.ncbi.nlm.nih.gov /entrez/entrezdirect xtract.Linux.gz
+gunzip -f xtract.Linux.gz
+chmod +x xtract.Linux
 
-
+#To get help on xtract do:
 ~/xtract.Linux -help
+#or
+./pathtoxtract/xtract.version -help
+#for linux this would be
+./xtract.Linux -help
+#or if you add it to your path, or put it somewhere that is in your path, for example in ~/.local/bin/ just do:
+xtract.Linux -help
 ```
 
-## Entrez Direct Functions
+## edirect Functions
 
-The edirect functions allow you to query the entrez database using a REST API.  Results can be returned in human readable text as [xml](https://www.sitepoint.com/really-good-introduction-xml/), [json](https://en.wikipedia.org/wiki/JSON) and (asn.1)[https://www.ncbi.nlm.nih.gov/Structure/asn1.html] formats.
+The edirect functions allow you to query the NCBI entrez database using a REST API.  Results can be returned in human readable text as [xml](https://www.sitepoint.com/really-good-introduction-xml/), [json](https://en.wikipedia.org/wiki/JSON) and (asn.1)[https://www.ncbi.nlm.nih.gov/Structure/asn1.html] formats.
 
 The following navigation functions support exploration within the Entrez databases:
 
@@ -73,7 +78,7 @@ Several additional functions are also provided:
 
 `nquire` sends a URL request to a web page or CGI service.
 
-The above functions can be piped to one another to allow creativty on the part of the end user.  To get help on any function do `functionname -help`
+The above functions can be piped to one another to allow creativty on the part of the end user.  To get help on any function do `functionname -help`, example `efetch -help`.
 
 
 ## An example to get assemblies from bioproject
