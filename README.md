@@ -231,7 +231,7 @@ Finally, look in and iterate through the lines in the MDATA file, `efetch` a gen
 ```
 cat ${MDATA} | while read BS ST AS
 do
-    echo "esearch -db nucleotide -query ${ASSEMBLY} | efetch -format gbwithparts > ${ASSEMBLY}.gbk"
+    echo "esearch -db nucleotide -query ${AS} | efetch -format gbwithparts > ${AS}.gbk"
 done | parallel -j 3 --bar {}
 ```
 
@@ -251,7 +251,7 @@ done
 
 cat ${MDATA} | while read BS ST AS
 do
-    echo "esearch -db nucleotide -query ${ASSEMBLY} | efetch -format gbwithparts > ${ASSEMBLY}.gbk"
+    echo "esearch -db nucleotide -query ${AS} | efetch -format gbwithparts > ${AS}.gbk"
 done | parallel -j 3 --bar {}
 ```
 
