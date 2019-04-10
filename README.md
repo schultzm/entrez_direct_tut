@@ -82,7 +82,7 @@ stdout of the functions can be piped to standard in (stdin) of another function,
 ## Example 1: Get RefSeq assemblies from a BioProject
 
 ### Check existence of BioProject and return a DocumentSummary of this record
-In this example we will examine bioproject PRJNA429695.  We will build up the command to connect the stdout of `esearch`, to the stdin of `efetch`, from the which the stdout goes to stdin of `elink`, from which the returned stdout is passed to `xtract` to grab desired fields.  Some knowledge of bash programming (shell scripting) will help out here.
+In this example we will examine bioproject PRJNA429695.  We will build up the command to connect the stdout of `esearch`, to the stdin of `efetch`, from the which the stdout goes to stdin of `elink`, from which the returned stdout is passed to `xtract` to grab desired fields.  Some knowledge of `bash` will help out here.
 
 First, check that the target bioproject exists by searching for the PRJ accession using `esearch`:
 
