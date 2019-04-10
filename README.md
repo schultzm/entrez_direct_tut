@@ -213,7 +213,7 @@ Great, we now have the BioSample accessions.  Our next problem is getting and ke
 
 Look at the variable with `echo ${BIOSAMPLES}`.
 
-Now iterate through the variable BIOSAMPLES, query entrez for each BIOSAMPLE using the edirect functions.  At each iteration,capture the DocumentSummary in the variable DOCSUM (so that we can just extract from this variable rather than having to use the slower method of re-quering entrez).  Using `xtract` we will parse DOCSUM and extract `STRAIN` and `ASSEMBLY` info, storing the metadata in the file `MDATA`.
+Now iterate through the variable BIOSAMPLES, query entrez for each BIOSAMPLE using the edirect functions.  At each iteration, capture the DocumentSummary in the variable DOCSUM (so that we can just extract from this variable rather than having to use the slower method of re-querying entrez).  Using `xtract` we will parse DOCSUM and extract `STRAIN` and `ASSEMBLY` info, storing the metadata in the file `MDATA`.
 
 ```
 MDATA="mdata.tab"
@@ -227,7 +227,8 @@ do
 done
 ```
 
-Finally, look in and iterate through the lines in the MDATA file, `efetch` a genbank `ASSEMBLY` and for each iteration and save each result in `[ASSEMBLY].gbk`.  This operation will be split up into three parallel operations using [GNU Parallel](https://www.gnu.org/software/parallel/).
+Finally, look in and iterate through the lines in the MDATA file, `efetch` a genbank `ASSEMBLY` for each iteration and save each result in `[ASSEMBLY].gbk`.  This operation will be split up into three parallel operations using [GNU Parallel](https://www.gnu.org/software/parallel/).  
+
 ```
 cat ${MDATA} | while read BS ST AS
 do
