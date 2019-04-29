@@ -349,7 +349,7 @@ parallel -j 3 --bar {} :::: fastqdump.txt
 ## Example 4: Given some accessions from a browse of patricbrc.org, get the assemblies in genbank format
 ### What is patric?
 
-See (here)[patricbrc.org]
+See [here](patricbrc.org)
 
 ### The example  
 
