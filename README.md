@@ -325,6 +325,7 @@ done | parallel -j 3 --bar {}
 
 [help!](https://www.ncbi.nlm.nih.gov/books/NBK56913/)
 
+### The example  
 
 Download read sets using `fastq-dump` (but consider using [ascp](https://www.ncbi.nlm.nih.gov/books/NBK158899/) since fastq-dump is slllooooow)
 ```
@@ -345,6 +346,21 @@ done > fastqdump.txt
 parallel -j 3 --bar {} :::: fastqdump.txt
 ```
 
-That's all for today.
+## Example 4: Given some accessions from a browse of patricbrc.org, get the assemblies in genbank format
+### What is patric?
 
-`EOF`
+See (here)[patricbrc.org]
+
+### The example  
+
+Grab the accessions from a downloaded metadata table for _E. coli_ ST405, download only the chromosomes (i.e., only the first accession for each row).  Do this using `gnu parallel`:
+
+```
+parallel --bar -j 3 "esearch -db nucleotide -query {} | efetch -format gbwithparts > ref_genomes/{}.gbk" ::: $(echo "CP021202,CP021203,CP021204,CP021205,CP021206
+CP023960,CP023959,CP023961,CP023957,CP023958
+CP027134,CP027130,CP027132,CP027131,CP027133,CP027129
+CP029579,CP029580,CP029581
+CP032261,CP032258,CP032259,CP032260,CP032262" | cut -d ',' -f 1)
+```
+
+
