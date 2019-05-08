@@ -363,4 +363,19 @@ CP029579,CP029580,CP029581
 CP032261,CP032258,CP032259,CP032260,CP032262" | cut -d ',' -f 1)
 ```
 
+## Example 5: Given a species name, find all available SRR data
+
+`esearch -db sra -query 'Bifidobacterium longum' | efetch -format docsum | grep SRR | cut -d '"' -f 2`
+
+Output should look something like this (truncated):  
+
+```
+SRR8949028
+SRR8834650
+SRR8832718
+SRR4380096
+SRR4380095
+SRR4380094
+...
+```
 
