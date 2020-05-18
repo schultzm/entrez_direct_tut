@@ -346,6 +346,12 @@ done > fastqdump.txt
 parallel -j 3 --bar {} :::: fastqdump.txt
 ```
 
+## Example 3.1:  Given a BioProject accession, download certain parts of the read metadata
+
+```{bash}
+esearch -db bioproject -query PRJNA613958 | elink -db sra -target sra | efetch -format docsum| xtract.Linux -pattern DocumentSummary -element 'Bioproject,Biosample,Submitter@acc,Study@acc,Sample@acc,Run@acc,Experiment@acc,Platform@instrument_model'
+```
+
 ## Example 4: Given some accessions from a browse of patricbrc.org, get the assemblies in genbank format
 ### What is patric?
 
