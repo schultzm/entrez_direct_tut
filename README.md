@@ -327,7 +327,7 @@ done | parallel -j 3 --bar {}
 
 ### The example  
 
-Download read sets using `fastq-dump` (but consider using [ascp](https://www.ncbi.nlm.nih.gov/books/NBK158899/) since fastq-dump is slllooooow)
+Download read sets using `fastq-dump` (but consider using [ascp](https://www.ncbi.nlm.nih.gov/books/NBK158899/) since fastq-dump is slow)
 ```
 MDATA="accessions_demo.txt"
 esearch -db bioproject -query PRJNA383436 | elink -target biosample | efetch -format docsum | xtract.Linux -pattern DocumentSummary -block Ids -element Id -group SRA > ${MDATA}
@@ -350,6 +350,12 @@ parallel -j 3 --bar {} :::: fastqdump.txt
 
 ```{bash}
 esearch -db bioproject -query PRJNA613958 | elink -db sra -target sra | efetch -format docsum| xtract.Linux -pattern DocumentSummary -element 'Bioproject,Biosample,Submitter@acc,Study@acc,Sample@acc,Run@acc,Experiment@acc,Platform@instrument_model'
+```
+
+## Example 3.2: Given a BioProject accession, download Biosample attributes
+
+```{bash}
+esearch -db bioproject -query PRJNA613958 | elink -target biosample | efetch -format docsum | xtract -pattern SampleData -element Attribute
 ```
 
 ## Example 4: Given some accessions from a browse of patricbrc.org, get the assemblies in genbank format
