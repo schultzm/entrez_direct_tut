@@ -383,6 +383,6 @@ SRR4380094
 ...
 ```
 
-## Example 6: Given an SRA accession, get the download links for the reads in their submitted format
+## Example 6: Given an SRA accession, get the download links for the reads in their submitted format (if submitted originally to NCBI)
 
 `efetch -db sra -id SRR14311695 | xtract -pattern Alternatives -block Alternatives -if Alternatives@url -ends-with '.gz' -element Alternatives@url`
