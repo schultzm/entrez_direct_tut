@@ -2,6 +2,8 @@
 
 For an in-depth tutorial on the edirect software, refer to [https://www.ncbi.nlm.nih.gov/books/NBK179288/](https://www.ncbi.nlm.nih.gov/books/NBK179288/).
 
+For an in-depth tutorial on the xtract software, refer to [https://dataguide.nlm.nih.gov/edirect/xtract.html](https://dataguide.nlm.nih.gov/edirect/xtract.html)
+
 # Custom entrez_direct tutorial
 
 The tutorial below aims to give a basic overview of the Entrez Direct (edirect) Representational State Transfer (REST) Application Programming Interface (API).  This system, known as `edirect`, is used to access the National Center for Biotechnology Information (NCBI) Entrez database.  Entrez is a web-accessible molecular biology database that provides integrated access to nucleotide and protein sequence data, gene-centered and genomic mapping information, 3D structure data, PubMed MEDLINE, and more.
