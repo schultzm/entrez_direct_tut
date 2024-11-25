@@ -29,15 +29,12 @@ Succesful results of any edirect query are returned to stdout in human readable 
 To install `xtract`, run the following commands in a terminal window but choose the appropriate version for your operating environment.  See [here](http://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/) for available versions:
 
 ```
-#Mac use xtract.Darwin, Linux use xtract.Linux, windows I think use the cygwin version.
-ftp-cp ftp.ncbi.nlm.nih.gov /entrez/entrezdirect xtract.Linux.gz
-gunzip -f xtract.Linux.gz
-#make it executable
-chmod +x xtract.Linux
-mv xtract.Linux ~/.local/bin
-
-#Add it to your path, or put it somewhere that is in your path, for example in ~/.local/bin/ so that you can get help by doing:
-xtract.Linux -help
+#Mac M processors, use xtract.ARM64, Linux use xtract.Linux, windows I think use the cygwin version.
+wget https://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/xtract.ARM64.gz
+gunzip -f xtract.ARM64.gz
+chmod +x xtract.ARM64
+sudo mv xtract.ARM64 /usr/local/bin
+# test the installation
 ```
 
 ## edirect Functions
