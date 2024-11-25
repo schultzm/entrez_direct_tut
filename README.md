@@ -21,21 +21,13 @@ First up, we need to install the edirect suite of tools.  The software is writte
 sh -c "$(wget -q ftp://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/install-edirect.sh -O -)"
 ```
 
+Either add the path of user-specified install dir, or `mv` the folder to e.g., `/usr/local/bin`
 
 Succesful results of any edirect query are returned to stdout in human readable text as [xml](https://www.sitepoint.com/really-good-introduction-xml/), [json](https://en.wikipedia.org/wiki/JSON) and [asn.1](https://www.ncbi.nlm.nih.gov/Structure/asn1.html) formats.  Errors are returned to standard error (stderr).  We can use the tool `xtract` to parse xml output.
 
 ### xtract
 
-To install `xtract`, run the following commands in a terminal window but choose the appropriate version for your operating environment.  See [here](http://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/) for available versions:
-
-```
-#Mac M processors, use xtract.ARM64, Linux use xtract.Linux, windows I think use the cygwin version.
-wget https://ftp.ncbi.nlm.nih.gov/entrez/entrezdirect/xtract.ARM64.gz
-gunzip -f xtract.ARM64.gz
-chmod +x xtract.ARM64
-sudo mv xtract.ARM64 /usr/local/bin
-# test the installation
-```
+`xtract` is installed as part of edirect suite.
 
 ## edirect Functions
 
