@@ -52,6 +52,7 @@ Desired fields from XML results can be extracted without writing a program:
 Several additional functions are also provided:
 
 `einfo` obtains information on indexed fields in an Entrez database. To get the list of available databases, do `einfo -dbs`  
+To find info on what each db does, do `einfo -dbs | while read line; do echo ${line}:; einfo -db ${line} | xtract -pattern DbInfo -first Description; done`. 
 
 `epost` uploads unique identifiers (UIDs) or sequence accession numbers.
 
